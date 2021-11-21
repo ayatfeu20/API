@@ -26,7 +26,7 @@ namespace Backenduppgift1.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.Include(x => x.SubCategory).ThenInclude(x => x.Category).ToListAsync();
         }
 
         // GET: api/Products/5
@@ -79,7 +79,7 @@ namespace Backenduppgift1.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(ProductCreate model)
         {
-            if (!string.IsNullOrEmpty(model.Name) && model.SubCategoryId > 0)
+            if (!string.IsNullOrEmpty(model.Name) && !string.IsNullOrEmpty(model.ImageUrl) && model.SubCategoryId > 0)
             {
                 var _product = await _context.Products.Where(x => x.Name.ToLower() == model.Name.ToLower()).FirstOrDefaultAsync();
 
@@ -91,7 +91,7 @@ namespace Backenduppgift1.Controllers
                         Description = model.Description,
                         Price = model.Price,
                         SubCategoryId = model.SubCategoryId,
-                        
+                        ImageUrl = model.ImageUrl
                     };
 
                     _context.Products.Add(product);
